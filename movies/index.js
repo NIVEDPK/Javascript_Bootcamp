@@ -6,29 +6,32 @@ const fetchData = async (searchElement) => {
     },
   });
 
-  console.log(response.data);
+  if (response.data.Error) {
+    return [];
+  }
+
+  return response.data.Search;
 };
 
 fetchData();
 
 const inputEl = document.querySelector("input");
 
-const debounce = (func, delay = 1000) => {
-  let timeooutId;
+const inputs = async (event) => {
+  const movies = await fetchData(event.target.value);
+  console.log(movies);
 
-  return (...args) => {
-    if (timeooutId) {
-      clearTimeout(timeooutId);
-    }
+  for (let movie of movies) {
+    const div = document.createElement("div");
 
-    timeooutId = setTimeout(() => {
-      func.apply(null, args);
-    }, delay);
-  };
-};
-
-const inputs = (event) => {
-  fetchData(event.target.value);
+    div.innerHTML = `
+    <a href="#" class="dropdown-item">
+    <img src="${movie.Poster}"/>
+    <h1>${movie.Title}</h1>
+    </a>
+    `;
+    document.querySelector(".dropdown-content").appendChild(div);
+  }
 };
 
 inputEl.addEventListener("input", debounce(inputs, 500));
